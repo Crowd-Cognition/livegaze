@@ -9,27 +9,6 @@ from flask_app.settings.models import Settings
 import operator
 import math
 
-
-def get_args():
-    parser = argparse.ArgumentParser()
-
-    parser.add_argument("--device", type=int, default=0)
-    parser.add_argument("--width", help='cap width', type=int, default=960)
-    parser.add_argument("--height", help='cap height', type=int, default=540)
-
-    parser.add_argument("--families", type=str, default='tag36h11')
-    parser.add_argument("--nthreads", type=int, default=1)
-    parser.add_argument("--quad_decimate", type=float, default=2.0)
-    parser.add_argument("--quad_sigma", type=float, default=0.0)
-    parser.add_argument("--refine_edges", type=int, default=1)
-    parser.add_argument("--decode_sharpening", type=float, default=0.25)
-    parser.add_argument("--debug", type=int, default=0)
-
-    args = parser.parse_args()
-
-    return args
-
-
 def sort_poses(tags):
     center_coords = {}
     for i in range(len(tags)):

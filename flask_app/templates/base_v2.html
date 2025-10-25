@@ -10,6 +10,8 @@
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
             crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='js/main_page/record_manager.js') }}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %} {% endblock %}</title>
     {% block head %}
 
@@ -19,9 +21,27 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-2">
-        <h1> {% block navbar_title %} {% endblock %}</h1>
+            <a href="{{ url_for('main_page.index') }}" class="text-body text-decoration-none"><h1> {% block navbar_title %} LiveGaze {% endblock %}</h1></a>
         </div>
         {% block navbar_mid %}
+            <div class="col-md-2">
+                <button class="btn btn-danger w-100" id="record_button" onclick="toggleRecord()">Start Recording</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('da.get_sessions') }}">
+                    <button class="btn btn-secondary w-100">Data Download</button>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href="{{  url_for('boards.add_artwork')}}">
+                    <button class="btn btn-secondary w-100">Create Board</button>
+                </a>
+            </div>
+            <div class="col-md-2">
+                <a href=" {{ url_for('trackers.trackers_list') }}">
+                    <button class="btn btn-secondary w-100">Eye Trackers</button>
+                </a>
+            </div>
         {% endblock %}
         <div class="col-md-2 d-flex align-items-center">
             <div class="text-end w-100">
