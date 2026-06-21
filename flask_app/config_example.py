@@ -10,4 +10,4 @@ SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL",DB_TYPE+"://"+POSTGRES_USER+"
 SECRET_KEY=os.getenv("SECRET_KEY","powerful secretkey")
 WTF_CSRF_SECRET_KEY=os.getenv("WTF_CSRF_SECRET_KEY","a csrf secret key")
 REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
-YOUTUBE_API_KEY = os.get("YOUTUBE_API_KEY","EXAMPLE_YOUTUBE_KEY")
+YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY","EXAMPLE_YOUTUBE_KEY")
