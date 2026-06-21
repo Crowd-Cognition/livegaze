@@ -8,8 +8,10 @@ from flask_app.gaze_manager.models import GazeData, GazeDatabaseModel
 import os
 if os.path.exists('config.py'):
     from flask_app.config import SQLALCHEMY_DATABASE_URI as DATABASE_URL
+    from flask_app.config import REDIS_URL as REDIS_URL
 else:
     from flask_app.config_example import SQLALCHEMY_DATABASE_URI as DATABASE_URL
+    from flask_app.config_example import REDIS_URL as REDIS_URL
 import time
 import json
 import redis
@@ -26,7 +28,7 @@ class SqlUpdateDaemon(threading.Thread):
         engine = create_engine(DATABASE_URL, echo=True)
         session_maker = sessionmaker(bind=engine)
         self.db_session = session_maker()
-        self.redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+        self.redis_client = redis.from_url(REDIS_URL)
 
 
     def run(self):
