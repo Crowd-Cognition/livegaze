@@ -13,6 +13,7 @@ def get_settings_model() -> Settings:
     if settings is None:
         settings = Settings()
         db.session.add(settings)
+        db.session.commit()
     return settings
 
 
