@@ -118,7 +118,7 @@ def add_stim():
         )
         db.session.add(stim)
         db.session.commit()
-        return Response(json.dumps({'stim_id': stim.id, 'stim_path': stim.file_path, 'thumbnail_path': thumbnail_path}),
+        return Response(json.dumps({'stim_id': stim.id, 'stim_path': stim.file_path, 'thumbnail_path': stim.thumbnail_path}),
                         mimetype='application/json', status=200)
     return Response(json.dumps({'error': 'Invalid file'}), mimetype='application/json', status=400)
 
