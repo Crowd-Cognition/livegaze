@@ -77,10 +77,20 @@ def add_stim():
             return Response(json.dumps({'error': 'Invalid file type'}), mimetype='application/json', status=400)
         uploaded_file = stim_form.stim_file.data
         file_name = secure_filename(uploaded_file.filename)
-        file_path = os.path.join(current_app.config['STIMULI_UPLOAD_PATH'], file_name)
+
+        upload_dir = current_app.config["STIMULI_UPLOAD_DIR"]
+        public_dir = current_app.config["STIMULI_PUBLIC_PATH"]
+
+        os.makedirs(upload_dir, exist_ok=True)
+
+        file_path = os.path.join(upload_dir, file_name)
         file_path = get_unique_filename(file_path)
         uploaded_file.save(file_path)
+
+        public_file_path = os.path.join(public_dir, os.path.basename(file_path)).replace(os.sep, "/")
+
         thumbnail_path = file_path
+        public_thumbnail_path = public_file_path
         if uploaded_file.content_type.startswith('video/'):
             # create a thumbnail for the video
             thumbnail_path = get_unique_filename(os.path.splitext(file_path)[0] + '.jpg')
@@ -99,18 +109,26 @@ def add_stim():
             except ffmpeg.Error as e:
                 print(e.stderr.decode(), file=sys.stderr)
                 sys.exit(1)
-        stim = Stimulus(file_path=file_path, thumbnail_path=thumbnail_path, stim_type=StimType.IMAGE if uploaded_file.content_type.startswith('image/') else StimType.VIDEO)
+            public_thumbnail_path = os.path.join(public_dir, os.path.basename(thumbnail_path)).replace(os.sep, "/")
+        stim = Stimulus(
+            file_path=public_file_path,
+            thumbnail_path=public_thumbnail_path,
+            stim_type=StimType.IMAGE if uploaded_file.content_type.startswith('image/') else StimType.VIDEO
+        )
         db.session.add(stim)
         db.session.commit()
-        return Response(json.dumps({'stim_id': stim.id, 'stim_path': stim.file_path, 'thumbnail_path' : thumbnail_path}),mimetype='application/json',status=200)
-    return Response(json.dumps({'error': 'Invalid file'}), mimetype='application/json',status=400)
+        return Response(json.dumps({'stim_id': stim.id, 'stim_path': stim.file_path, 'thumbnail_path': thumbnail_path}),
+                        mimetype='application/json', status=200)
+    return Response(json.dumps({'error': 'Invalid file'}), mimetype='application/json', status=400)
+
 
 @board_blueprint.route('/submit_youtube', methods=['POST'])
 @login_required
 def submit_youtube():
     video_id = request.form.get('video_id')
     # check if YouTube video id is valid
-    response = requests.get(f'https://www.googleapis.com/youtube/v3/videos?id={video_id}&key={current_app.config["YOUTUBE_API_KEY"]}&part=id')
+    response = requests.get(
+        f'https://www.googleapis.com/youtube/v3/videos?id={video_id}&key={current_app.config["YOUTUBE_API_KEY"]}&part=id')
     if response.status_code != 200:
         return Response(json.dumps({'error': 'Invalid YouTube video id'}), mimetype='application/json', status=400)
     data = response.json()
@@ -119,11 +137,21 @@ def submit_youtube():
     if data['pageInfo']['totalResults'] == 0:
         return Response(json.dumps({'error': 'Invalid YouTube video id'}), mimetype='application/json', status=400)
 
-    stim = Stimulus(stim_type=StimType.YOUTUBE, file_path=video_id, thumbnail_path='https://img.youtube.com/vi/' + video_id + '/hqdefault.jpg')
+    stim = Stimulus(stim_type=StimType.YOUTUBE, file_path=video_id,
+                    thumbnail_path='https://img.youtube.com/vi/' + video_id + '/hqdefault.jpg')
     db.session.add(stim)
     db.session.commit()
 
-    return Response(json.dumps({'stim_path': video_id, 'stim_id': stim.id}), mimetype='application/json', status=200)
+    return Response(
+        json.dumps({
+            'stim_id': stim.id,
+            'stim_path': stim.file_path,
+            'thumbnail_path': stim.thumbnail_path
+        }),
+        mimetype='application/json',
+        status=200
+    )
+
 
 @board_blueprint.route('/submit_webpage', methods=['POST'])
 @login_required
@@ -133,7 +161,8 @@ def submit_web():
         return Response(json.dumps({'error': 'Please enter a valid URL'}), mimetype='application/json', status=400)
     if not web_url.startswith(('http://', 'https://')):
         web_url = 'http://' + web_url
-    stim = Stimulus(stim_type=StimType.WEBPAGE, file_path=web_url, thumbnail_path='https://www.google.com/s2/favicons?domain=' + web_url)
+    stim = Stimulus(stim_type=StimType.WEBPAGE, file_path=web_url,
+                    thumbnail_path='https://www.google.com/s2/favicons?domain=' + web_url)
     db.session.add(stim)
     db.session.commit()
     return Response(json.dumps({'stim_path': web_url, 'stim_id': stim.id}), mimetype='application/json', status=200)
@@ -173,6 +202,7 @@ def get_simple_js(board_id):
         'selected_label_id': 0,
     }
     return render_template('boards/simple_board.html', **context)
+
 
 @board_blueprint.route('/calibration')
 def get_calib():

@@ -1,5 +1,13 @@
 import os
-STIMULI_UPLOAD_PATH = 'static/artworks/'
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+STIMULI_PUBLIC_PATH = os.getenv("STIMULI_PUBLIC_PATH", "static/artworks")
+STIMULI_UPLOAD_DIR = os.getenv(
+    "STIMULI_UPLOAD_DIR",
+    os.path.join(BASE_DIR, "static", "artworks")
+)
+
+STIMULI_UPLOAD_PATH = STIMULI_UPLOAD_DIR
 DB_TYPE = 'postgresql+psycopg2'
 POSTGRES_DB = os.getenv('POSTGRES_DB','livegaze')
 POSTGRES_HOST = os.getenv('POSTGRES_HOST','localhost')
