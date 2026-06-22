@@ -19,7 +19,7 @@ def get_settings_model() -> Settings:
 @settings_blueprint.route('/')
 @login_required
 def get_settings():
-    settings = db.session.query(Settings).first()
+    settings = get_settings_model()
     active_shape = settings.pointer_id
     pointer_size = settings.pointer_size
     return render_template('settings/../templates/settings/settings.html', title='Settings', active_shape=active_shape,

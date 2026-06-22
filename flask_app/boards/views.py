@@ -14,6 +14,7 @@ import requests
 import ffmpeg
 import sys
 from flask_app.boards.utils import get_unique_filename
+from flask_app.settings.views import get_settings_model
 
 board_blueprint = Blueprint('boards', __name__)
 
@@ -172,7 +173,7 @@ def submit_web():
 @login_required
 def mapped_gaze_feed(board_id, screen_height, screen_width):
     artwork = db.session.query(Board).get(board_id)
-    settings = db.session.query(Settings).first()
+    settings = get_settings_model()
     return Response(gen_artwork_img('simple', int(screen_width), int(screen_height), artwork, settings),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -181,7 +182,7 @@ def mapped_gaze_feed(board_id, screen_height, screen_width):
 @login_required
 def get_torch_feed(board_id, screen_height, screen_width):
     artwork = db.session.query(Board).get(board_id)
-    settings = db.session.query(Settings).first()
+    settings = get_settings_model()
     return Response(gen_artwork_img('torch', int(screen_width), int(screen_height), artwork, settings),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -193,7 +194,7 @@ def get_simple_js(board_id):
     # stimuli_paths = [stimulus.stimulus.file_path for stimulus in board.stimuli]
     # stimuli_types = [stimulus.stimulus.stim_type for stimulus in board.stimuli]
     stimuli = [stimulus.stimulus for stimulus in board.stimuli]
-    settings = db.session.query(Settings).first()
+    settings = get_settings_model()
     context = {
         'stimuli': stimuli,
         'board_id': board_id,
