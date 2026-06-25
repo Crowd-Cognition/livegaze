@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>artworkTest</title>
     <script>
-        const arucoId = {{ aruco_id }}
-        {#const boardId = {{ board_id }}#}
-        const selectedMarkerId = {{ selected_label_id }};
-        const pointerSize = {{ pointer_size }};
+        var arucoId = {{ aruco_id }};
+        {#var boardId = {{ board_id }};#}
+        var selectedMarkerId = {{ selected_label_id }};
+        var pointerSize = {{ pointer_size }};
     </script>
-    <script src="{{ url_for('static', filename='js/openCV.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/opencv.js') }}"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js" integrity="sha384-mkQ3/7FUtcGyoppY6bz/PORYoGqOl7/aSUMn2ymDOJcapfS6PHqxhRTMh1RR0Q6+" crossorigin="anonymous"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/aruco/cv.js') }}"></script>
